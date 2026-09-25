@@ -19,11 +19,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    role:{
-        type: String,
-        enum:["Admin","Owner","Collaborator","Viewer"],
-        default:"Viewer"
-    },
     avatar:{
         type: String
     },
@@ -47,7 +42,6 @@ userSchema.methods.isPasswordCorrect = async function(password){
 userSchema.methods.generateAccessToken = function(){
     return jwt.sign({
         _id : this._id,
-        role: this.role
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -59,7 +53,6 @@ userSchema.methods.generateAccessToken = function(){
 userSchema.methods.generateRefreshToken = function(){
     return jwt.sign({
         _id : this._id,
-        role: this.role,
     },
     process.env.REFRESH_TOKEN_SECRET,
     {

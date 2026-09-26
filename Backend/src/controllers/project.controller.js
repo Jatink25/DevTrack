@@ -20,6 +20,27 @@ const createProject = asyncHandler(async (req,res)=>{
         new ApiResponse(201,project,"new project initialized")
     )
 
+});
+
+const getProjects = asyncHandler(async (req,res)=>{
+    const {_id} = req.user
+
+    if(!_id){
+        throw new ApiError(400,"user not found")
+    }
+    
+    const projects = await Project.find({
+        $or:[
+            {owner:_id},
+            {"members.user":_id}
+        ]
+    })
+
+    res.status(200).json(
+        new ApiResponse(200,projects,"Projects fetched successfully")
+    )
+    
+    
 })
 
-export {createProject}
+export {createProject , getProjects}

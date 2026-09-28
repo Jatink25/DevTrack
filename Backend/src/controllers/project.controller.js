@@ -71,4 +71,46 @@ const getProjectById = asyncHandler(async (req,res)=>{
     )
 });
 
-export {createProject , getProjects,getProjectById}
+const updateProject = asyncHandler(async (req,res)=>{
+    const userId = req.user._id
+    const projectId = req.params.projectId
+
+    if(!userId){
+        throw new ApiError(400,"user not logged in")
+    }
+    if(!projectId){
+        throw new ApiError(400,"Project not found")
+    }
+
+    const project = await Project.findById(projectId)
+
+    if(!project){
+        throw new ApiError(404,"project not found")
+    }
+
+    const {owner} = project
+
+    if(!owner.equals(userId)){
+        throw new ApiError(403,"Unauthorized request")
+    }
+
+    const {name, description, status} = req.body
+
+    if(name){
+        project.name = name
+    }
+    if(description){
+        project.description = description
+    }
+    if(status){
+        project.status = status
+    }
+
+    await project.save()
+
+    res.status(201).json(
+        new ApiResponse(200,project,"project has updated successfully")
+    )
+    
+});
+export {createProject , getProjects, getProjectById, updateProject}

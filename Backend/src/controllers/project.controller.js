@@ -110,7 +110,35 @@ const updateProject = asyncHandler(async (req,res)=>{
 
     res.status(201).json(
         new ApiResponse(200,project,"project has updated successfully")
-    )
-    
+    )  
 });
-export {createProject , getProjects, getProjectById, updateProject}
+
+const deleteProject = asyncHandler(async (req,res)=>{
+    const userId = req.user._id
+    const projectId = req.params.projectId
+    if(!userId){
+        throw new ApiError(400,"user not logged in")
+    }
+    if(!projectId){
+        throw new ApiError(404,"project not found")
+    }
+
+    const project = await Project.findById(projectId)
+
+    if(!project){
+        throw new ApiError(404,"project not found")
+    }
+
+    const {owner} = project
+
+    if(!owner.equals(userId)){
+        throw new ApiError(403,"unauthorized request")
+    }
+
+    await Project.deleteOne({_id: projectId})
+
+    res.status(200).json(
+        new ApiResponse(200,{},"project deleted successfully")
+    )
+})
+export {createProject , getProjects, getProjectById, updateProject, deleteProject}

@@ -200,4 +200,37 @@ const addMember = asyncHandler(async (req, res) => {
     )
 
 });
-export { createProject, getProjects, getProjectById, updateProject, deleteProject ,addMember }
+
+const getProjectMembers = asyncHandler(async (req,res)=>{
+    const projectId = req.params.projectId
+    const userId = req.user._id
+
+    if(!projectId){
+        throw new ApiError(404,"project not found")
+    }
+    if(!userId){
+        throw new ApiError(400,"user not logged in")
+    }
+
+    const project = await Project.findById(projectId).populate("members.user","username email")
+
+    if(!project){
+        throw new ApiError(404,"project not found")
+    }
+    
+    const {members,owner} = project
+
+    const memberCheck = members.some(
+        (existedMembers)=> existedMembers.user.equals(userId)
+    )
+
+    if(!(owner.equals(userId)||memberCheck)){
+        throw new ApiError(403,"unauthorized request")
+    }
+
+    res.status(200).json(
+        new ApiResponse(200,members,"members fetched successfully")
+    )
+
+});
+export { createProject, getProjects, getProjectById, updateProject, deleteProject ,addMember ,getProjectMembers }

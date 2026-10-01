@@ -233,4 +233,50 @@ const getProjectMembers = asyncHandler(async (req,res)=>{
     )
 
 });
-export { createProject, getProjects, getProjectById, updateProject, deleteProject ,addMember ,getProjectMembers }
+
+const removeProjectMembers = asyncHandler(async (req,res)=>{
+    const userId = req.user._id
+    const projectId = req.params.projectId
+    const {memberId} = req.body
+
+    if(!userId){
+        throw new ApiError(400,"user not logged in")
+    }
+    if(!projectId){
+        throw new ApiError(404,"project not found")
+    }
+    if(!memberId){
+        throw new ApiError(400,"Id of the member to be removed not found")
+    }
+
+    const project = await Project.findById(projectId)
+
+    if(!project){
+        throw new ApiError(404,"project not found")
+    }
+
+    const {owner,members} = project
+
+    const memberCheck = members.some(
+        (existingMember)=> existingMember.user.equals(memberId)
+    )
+
+    if(!owner.equals(userId)){
+        throw new ApiError(403,"unauthorized request")
+    }
+    if(!memberCheck){
+        throw new ApiError(400,"member to be removed does not exist in the project")
+    }
+    
+    const memberIdx = members.findIndex(
+        (existingmembers)=>existingmembers.user.equals(memberId)
+    )
+    members.splice(memberIdx,1)
+    
+    await project.save()
+
+    res.status(200).json(
+        new ApiResponse(200,project,"member removed successfully")
+    )
+});
+export { createProject, getProjects, getProjectById, updateProject, deleteProject ,addMember ,getProjectMembers, removeProjectMembers }

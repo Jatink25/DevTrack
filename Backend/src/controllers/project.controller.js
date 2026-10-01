@@ -279,4 +279,65 @@ const removeProjectMembers = asyncHandler(async (req,res)=>{
         new ApiResponse(200,project,"member removed successfully")
     )
 });
-export { createProject, getProjects, getProjectById, updateProject, deleteProject ,addMember ,getProjectMembers, removeProjectMembers }
+
+const updateMemberRole = asyncHandler(async (req,res)=>{
+
+    const userId = req.user._id
+    const projectId = req.params.projectId
+    const memberId  = req.params.memberId
+    const {role} = req.body
+    if(!userId){
+        throw new ApiError(400,"user not logged in")
+    }
+    if(!projectId){
+        throw new ApiError(404,"project not found")
+    }
+    if(!(memberId)){
+        throw new ApiError(400,"member id not found")
+    }
+    if(!role){
+        throw new ApiError(400,"role field is required")
+    }
+    
+
+    const project = await Project.findById(projectId)
+
+    if(!project){
+        throw new ApiError(404,"project not found")
+    }
+
+    const {owner,members} = project
+    if(!owner.equals(userId)){
+        throw new ApiError(403,"unauthorized request")
+    }
+
+    const member = members.find(
+        (existingMember)=>existingMember.user.equals(memberId)
+    )
+
+    if(!member){
+        throw new ApiError(400,"member does not exist")
+    }
+
+    if(!["Viewer","Collaborator"].includes(role)){
+        throw new ApiError(400,"invalid member role")
+    }
+
+    
+    member.role =role
+    await project.save()
+    
+    res.status(200).json(
+        new ApiResponse(200,project,"role updated successfully!")
+    )
+});
+export { createProject,
+     getProjects,
+     getProjectById,
+     updateProject,
+     deleteProject,
+     addMember,
+     getProjectMembers,
+     removeProjectMembers,
+     updateMemberRole
+     }

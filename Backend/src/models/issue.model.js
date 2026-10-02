@@ -37,15 +37,14 @@ const issueSchema = new mongoose.Schema({
         url:{
             type:String
         },
-        public_id:{
+        publicId:{
             type:String
         }
     }],
     dueDate:{
         type:Date
     }
-
-
+    
 },{timestamps:true})
 
 export const Issue = mongoose.model("Issue",issueSchema)

@@ -117,11 +117,70 @@ const getAllComment = asyncHandler(async (req, res) => {
 
     const comments = await Comment.find({
         issue: issueId
-    }).populate("createdBy","username email")
+    }).populate("createdBy", "username email")
 
     res.status(200).json(
-        new ApiResponse(200,comments,"all comments fetched successfully")
+        new ApiResponse(200, comments, "all comments fetched successfully")
     )
 });
 
-export { createComment , getAllComment }
+const deleteComment = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const projectId = req.params.projectId;
+    const issueId = req.params.issueId;
+    const commentId = req.params.commentId
+
+    if (!userId) {
+        throw new ApiError(400, "user not logged in");
+    }
+
+    if (!projectId) {
+        throw new ApiError(400, "project id is required");
+    }
+
+    if (!issueId) {
+        throw new ApiError(400, "issue id is required");
+    }
+    if (!commentId) {
+        throw new ApiError(400, "comment id is required");
+    }
+
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+        throw new ApiError(404, "project not found");
+    }
+    const issue = await Issue.findOne({
+        _id: issueId,
+        project: projectId
+    })
+
+    if (!issue) {
+        throw new ApiError(404, "issue not found");
+    }
+
+    const comment = await Comment.findOne({
+        _id: commentId,
+        issue: issueId
+    })
+
+    if (!comment) {
+        throw new ApiError(404, "the comment not found")
+    }
+
+    const { owner } = project
+    const { createdBy } = comment
+
+    if (!(owner.equals(userId) || createdBy.equals(userId))) {
+        throw new ApiError(403, "unauthorized request")
+    }
+
+    await Comment.deleteOne({
+        _id: commentId
+    })
+
+    res.status(200).json(
+        new ApiResponse(200, {}, "comment deleted")
+    )
+});
+export { createComment, getAllComment, deleteComment }

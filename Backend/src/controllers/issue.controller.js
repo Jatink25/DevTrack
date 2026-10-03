@@ -277,5 +277,53 @@ const updateIssue = asyncHandler(async (req, res) => {
     );
 });
 
+const deleteIssue = asyncHandler(async(req,res)=>{
+    const userId = req.user._id;
+    const projectId = req.params.projectId;
+    const issueId = req.params.issueId;
 
-export {createIssue, getAllIssue, getIssueById, updateIssue};
+    if (!userId) {
+        throw new ApiError(400, "user not logged in");
+    }
+
+    if (!projectId) {
+        throw new ApiError(400, "project id is required");
+    }
+
+    if (!issueId) {
+        throw new ApiError(400, "issue id is required");
+    }
+
+    const project = await Project.findById(projectId);
+    
+    if (!project) {
+        throw new ApiError(404, "project not found");
+    }
+
+    const issue = await Issue.findOne({
+        _id: issueId,
+        project: projectId
+    })
+    if(!issue){
+        throw new ApiError(404,"issue not found")
+    }
+
+    const {owner} = project
+    const {createdBy} =issue
+
+    if(!(owner.equals(userId)||createdBy.equals(userId))){
+        throw new ApiError(403,"unauthorized request")
+    }
+
+    await Issue.deleteOne({
+        _id: issueId,
+        project: projectId
+    })
+
+    res.status(200).json(
+        new ApiResponse(200,{},"Issue deleted Successfully")
+    )
+
+});
+
+export {createIssue, getAllIssue, getIssueById, updateIssue, deleteIssue};

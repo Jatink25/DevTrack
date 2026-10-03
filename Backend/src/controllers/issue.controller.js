@@ -163,4 +163,119 @@ const getIssueById = asyncHandler(async(req,res)=>{
         new ApiResponse(200,issue,"issue fetched successfully")
     )
 });
-export {createIssue, getAllIssue, getIssueById};
+
+
+const updateIssue = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const projectId = req.params.projectId;
+    const issueId = req.params.issueId;
+
+    if (!userId) {
+        throw new ApiError(400, "user not logged in");
+    }
+
+    if (!projectId) {
+        throw new ApiError(400, "project id is required");
+    }
+
+    if (!issueId) {
+        throw new ApiError(400, "issue id is required");
+    }
+
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+        throw new ApiError(404, "project not found");
+    }
+
+    const { owner, members } = project;
+
+    const isOwner = owner.equals(userId);
+
+    const member = members.find(
+        (existingMember) => existingMember.user.equals(userId)
+    );
+
+    if (!isOwner && !member) {
+        throw new ApiError(403, "unauthorized request");
+    }
+
+    if (!isOwner && member.role === "Viewer") {
+        throw new ApiError(403, "viewers cannot update issues");
+    }
+
+    const issue = await Issue.findOne({
+        _id: issueId,
+        project: projectId
+    })
+
+    if (!issue) {
+        throw new ApiError(404, "issue not found");
+    }
+
+    const {
+        title,
+        description,
+        assignedTo,
+        status,
+        priority,
+        dueDate
+    } = req.body;
+
+    if (title !== undefined) {
+        issue.title = title;
+    }
+
+    if (description !== undefined) {
+        issue.description = description;
+    }
+
+    if (assignedTo !== undefined) {
+
+        // Allow removing assignment
+        if (assignedTo === null) {
+            issue.assignedTo = null;
+        } else {
+
+            const assignedMember = members.find(
+                (member) => member.user.equals(assignedTo)
+            );
+
+            const assignedUserIsOwner = owner.equals(assignedTo);
+
+            if (!assignedMember && !assignedUserIsOwner) {
+                throw new ApiError(
+                    400,
+                    "assigned user is not a member of this project"
+                );
+            }
+
+            issue.assignedTo = assignedTo;
+        }
+    }
+
+    if (status !== undefined) {
+        issue.status = status;
+    }
+
+    if (priority !== undefined) {
+        issue.priority = priority;
+    }
+
+    if (dueDate !== undefined) {
+        issue.dueDate = dueDate;
+    }
+
+    await issue.save();
+
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            issue,
+            "issue updated successfully"
+        )
+    );
+});
+
+
+export {createIssue, getAllIssue, getIssueById, updateIssue};

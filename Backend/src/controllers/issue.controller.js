@@ -4,6 +4,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import {Project} from "../models/project.model.js";
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { Issue } from "../models/issue.model.js";
+import fs from "fs";
+
+
 
 const createIssue = asyncHandler(async (req,res)=>{
     const userId = req.user._id
@@ -58,6 +61,9 @@ const createIssue = asyncHandler(async (req,res)=>{
             if(!uploadFile){
                 throw new ApiError(500,"failed to upload attachment")
             }
+
+            fs.unlinkSync(file.path);
+
             attachments.push({
                 url:uploadFile.secure_url,
                 publicId:uploadFile.public_id

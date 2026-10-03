@@ -3,6 +3,7 @@ import cors from "cors"
 import cookieParser from "cookie-parser"
 import authRouter from "./routes/auth.route.js"
 import  projectRoute  from "./routes/project.route.js";
+import issueRoute from "./routes/issue.route.js";
 
 const app = express();
 
@@ -30,5 +31,6 @@ app.use(cookieParser());
 //route
 app.use("/api/v1/auth",authRouter)
 app.use("/api/v1/projects",projectRoute)
+app.use("/api/v1/projects/:projectId",issueRoute)
 
 export default app

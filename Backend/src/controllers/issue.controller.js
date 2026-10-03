@@ -86,4 +86,37 @@ const createIssue = asyncHandler(async (req,res)=>{
     )
 
 });
-export {createIssue};
+
+const getAllIssue = asyncHandler(async(req,res)=>{
+    const userId = req.user._id
+    const projectId = req.params.projectId
+
+    if(!userId){
+        throw new ApiError(400,"user not logged in")
+    }
+    if(!projectId){
+        throw new ApiError(404,"project not found")
+    }
+
+    const project = await Project.findById(projectId)
+
+    if(!project){
+        throw new ApiError(404,"project not found")
+    }
+    
+    const {owner,members} = project
+
+    const member = members.find(
+        (existingMembers)=>existingMembers.user.equals(userId)
+    )
+
+    if(!(member||owner.equals(userId))){
+        throw new ApiError(403,"unauthorized request")
+    }
+    const issues = await Issue.find({project:projectId}).populate("createdBy","username email").populate("assignedTo","username email");
+
+    res.status(200).json(
+        new ApiResponse(200,issues,"project issues fetched successfully")
+    )
+});
+export {createIssue, getAllIssue};

@@ -4,6 +4,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Issue } from "../models/issue.model.js";
 import { Project } from "../models/project.model.js";
 import { Comment } from "../models/comment.model.js";
+import { logActivity } from "../utils/activityLogger.js";
 
 const createComment = asyncHandler(async (req, res) => {
     const userId = req.user._id;
@@ -64,6 +65,14 @@ const createComment = asyncHandler(async (req, res) => {
         issue: issueId,
         createdBy: userId
     })
+
+    await logActivity({
+        userId,
+        projectId,
+        issueId,
+        action: "Comment Added",
+        description: `A comment was added to issue "${issue.title}"`
+    });
 
     res.status(201).json(
         new ApiResponse(201, comment, "comment is created")
@@ -174,6 +183,14 @@ const deleteComment = asyncHandler(async (req, res) => {
     if (!(owner.equals(userId) || createdBy.equals(userId))) {
         throw new ApiError(403, "unauthorized request")
     }
+
+    await logActivity({
+        userId,
+        projectId,
+        issueId,
+        action: "Comment Deleted",
+        description: `A comment was deleted from issue "${issue.title}"`
+    });
 
     await Comment.deleteOne({
         _id: commentId

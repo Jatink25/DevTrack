@@ -105,6 +105,10 @@ const createIssue = asyncHandler(async (req, res) => {
 const getAllIssue = asyncHandler(async (req, res) => {
     const userId = req.user._id
     const projectId = req.params.projectId
+    const { status, priority, search } = req.query
+
+    const page = Number(req.query.page) || 1
+    const limit = Number(req.query.limit) || 10
 
     if (!userId) {
         throw new ApiError(400, "user not logged in")
@@ -128,11 +132,46 @@ const getAllIssue = asyncHandler(async (req, res) => {
     if (!(member || owner.equals(userId))) {
         throw new ApiError(403, "unauthorized request")
     }
-    const issues = await Issue.find({ project: projectId }).populate("createdBy", "username email").populate("assignedTo", "username email");
+
+    const query = {
+        project: projectId
+    }
+
+    if (status) {
+        query.status = status
+    }
+    if (priority) {
+        query.priority = priority
+    }
+    if (search) {
+        query.title = {
+            $regex: search,
+            $options: "i"
+        }
+    }
+    const skip = (page - 1) * limit;
+
+    const totalIssues = await Issue.countDocuments(query)
+    const totalPages = Math.ceil(totalIssues / limit)
+
+    const issues = await Issue.find(query)
+        .populate("createdBy", "username email")
+        .populate("assignedTo", "username email")
+        .skip(skip)
+        .limit(limit)
 
     res.status(200).json(
-        new ApiResponse(200, issues, "project issues fetched successfully")
-    )
+        new ApiResponse(
+            200,
+            {
+                issues,
+                currentPage: page,
+                totalPages,
+                totalIssues
+            },
+            "project issues fetched successfully"
+        )
+    );
 });
 
 const getIssueById = asyncHandler(async (req, res) => {

@@ -41,7 +41,7 @@ const createIssue = asyncHandler(async (req, res) => {
     const { title, description, assignedTo, priority, status, dueDate } = req.body
 
     if (!(title && description)) {
-        throw new ApiError(400, "all fields are required")
+        throw new ApiError(400, "title and description are required")
     }
 
     if (assignedTo) {

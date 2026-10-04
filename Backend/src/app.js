@@ -4,7 +4,8 @@ import cookieParser from "cookie-parser"
 import authRouter from "./routes/auth.route.js"
 import  projectRoute  from "./routes/project.route.js";
 import issueRoute from "./routes/issue.route.js";
-import commentRoute from "./routes/comment.route.js"
+import commentRoute from "./routes/comment.route.js";
+import dashboardRoute from "./routes/dashboard.route.js";
 
 const app = express();
 
@@ -35,5 +36,7 @@ app.use("/api/v1/projects",projectRoute)
 app.use("/api/v1/projects/:projectId",issueRoute)
 
 app.use("/api/v1/projects/:projectId/issues/:issueId",commentRoute)
+
+app.use("/api/v1/projects/:projectId",dashboardRoute)
 
 export default app

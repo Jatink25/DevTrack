@@ -6,6 +6,7 @@ import  projectRoute  from "./routes/project.route.js";
 import issueRoute from "./routes/issue.route.js";
 import commentRoute from "./routes/comment.route.js";
 import dashboardRoute from "./routes/dashboard.route.js";
+import activityRoute from "./routes/activity.route.js";
 
 const app = express();
 
@@ -38,5 +39,6 @@ app.use("/api/v1/projects/:projectId",issueRoute)
 app.use("/api/v1/projects/:projectId/issues/:issueId",commentRoute)
 
 app.use("/api/v1/projects/:projectId",dashboardRoute)
+app.use("/api/v1/projects/:projectId", activityRoute)
 
 export default app

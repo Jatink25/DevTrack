@@ -9,6 +9,7 @@ import { useProject } from "../features/projects/useProject.js";
 import ProjectSectionNav from "../features/projects/ProjectSectionNav.jsx";
 import { getErrorMessage } from "../lib/getErrorMessage.js";
 import IssueComments from "../features/issues/IssueComments.jsx";
+import BackLink from "../components/ui/BackLink.jsx";
 
 const STATUS_STYLES = {
     Todo: "bg-gray-100 text-gray-700",
@@ -146,17 +147,15 @@ export default function IssueDetailsPage() {
     if (!hasValidIds) {
         return (
             <main className="space-y-6">
-                <Link
+                <BackLink
                     to={
                         projectId
                             ? `/projects/${encodeURIComponent(projectId)}/issues`
                             : "/projects"
                     }
-                    className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-gray-900"
                 >
-                    <span aria-hidden="true">←</span>
                     Back to Issues
-                </Link>
+                </BackLink>
                 <p
                     role="alert"
                     className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-800"
@@ -174,13 +173,11 @@ export default function IssueDetailsPage() {
     if (error) {
         return (
             <main className="space-y-6">
-                <Link
+                <BackLink
                     to={issuesPath}
-                    className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-gray-900"
                 >
-                    <span aria-hidden="true">←</span>
                     Back to Issues
-                </Link>
+                </BackLink>
                 <IssueDetailsError error={error} onRetry={refetch} />
             </main>
         );
@@ -188,13 +185,11 @@ export default function IssueDetailsPage() {
     if (!issue) {
         return (
             <main className="space-y-6">
-                <Link
+                <BackLink
                     to={issuesPath}
-                    className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-gray-900"
                 >
-                    <span aria-hidden="true">←</span>
                     Back to Issues
-                </Link>
+                </BackLink>
                 <p
                     role="alert"
                     className="rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-800"
@@ -261,13 +256,11 @@ export default function IssueDetailsPage() {
     return (
         <main className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-                <Link
+                <BackLink
                     to={issuesPath}
-                    className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-gray-900"
                 >
-                    <span aria-hidden="true">←</span>
                     Back to Issues
-                </Link>
+                </BackLink>
                 <Link
                     to={`/projects/${encodeURIComponent(projectId)}`}
                     className="cursor-pointer text-sm font-medium text-blue-700 transition hover:text-blue-900"

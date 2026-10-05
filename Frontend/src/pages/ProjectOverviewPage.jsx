@@ -3,6 +3,7 @@ import DashboardError from "../features/dashboard/DashboardError.jsx";
 import { useProjectStats } from "../features/dashboard/useProjectStats.js";
 import ProjectIssueSummary from "../features/projects/ProjectIssueSummary.jsx";
 import ProjectSectionNav from "../features/projects/ProjectSectionNav.jsx";
+import BackLink from "../components/ui/BackLink.jsx";
 import { useProject } from "../features/projects/useProject.js";
 import { useAuth } from "../features/auth/AuthContext.jsx";
 
@@ -131,13 +132,11 @@ export default function ProjectOverviewPage() {
 
     return (
         <main className="space-y-6">
-            <Link
+            <BackLink
                 to="/projects"
-                className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-gray-900"
             >
-                <span aria-hidden="true">←</span>
-                All projects
-            </Link>
+                Back to Projects
+            </BackLink>
 
             <header className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7">
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">

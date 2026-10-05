@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import DashboardError from "../features/dashboard/DashboardError.jsx";
 import ProjectSectionNav from "../features/projects/ProjectSectionNav.jsx";
 import { useProject } from "../features/projects/useProject.js";
 import IssueCard from "../features/issues/IssueCard.jsx";
 import { useProjectIssues } from "../features/issues/useProjectIssues.js";
 import CreateIssueModal from "../features/issues/CreateIssueModal.jsx";
+import BackLink from "../components/ui/BackLink.jsx";
 
 const STATUSES = ["Todo", "In Progress", "Review", "Completed"];
 const PRIORITIES = ["Low", "Medium", "High", "Critical"];
@@ -126,13 +127,11 @@ export default function ProjectIssuesPage() {
     return (
         <main className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-                <Link
+                <BackLink
                     to={`/projects/${encodeURIComponent(projectId)}`}
-                    className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-gray-900"
                 >
-                    <span aria-hidden="true">←</span>
-                    {projectLoading ? "Project" : project?.name || "Project overview"}
-                </Link>
+                    {`Back to ${projectLoading ? "Project" : project?.name || "Project overview"}`}
+                </BackLink>
                 <button
                     type="button"
                     onClick={() => setIsCreateOpen(true)}

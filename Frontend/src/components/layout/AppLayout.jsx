@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthContext.jsx";
 import { readStoredProjectId } from "../../features/dashboard/useSelectedProject.js";
+import { useTheme } from "../../features/theme/useTheme.js";
 
 const NAV_ITEMS = [
     { label: "Dashboard", to: "/dashboard", end: true },
@@ -55,7 +56,29 @@ function NavigationLinks({ onNavigate, settingsPath }) {
                     </NavLink>
                 );
             })}
+            <ThemeToggle />
         </nav>
+    );
+}
+
+function ThemeToggle() {
+    const { theme, toggleTheme } = useTheme();
+    const actionLabel =
+        theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
+
+    return (
+        <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={actionLabel}
+            title={actionLabel}
+            className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
+        >
+            <span aria-hidden="true" className="flex h-5 w-5 shrink-0 items-center justify-center text-base">
+                {theme === "dark" ? "☀" : "☾"}
+            </span>
+            <span>{actionLabel}</span>
+        </button>
     );
 }
 
@@ -95,7 +118,7 @@ export default function AppLayout() {
                     <NavigationLinks settingsPath={settingsPath} />
                 </div>
 
-                <div className="space-y-4 border-t border-gray-100 p-4">
+                <div className="space-y-3 border-t border-gray-100 p-4">
                     <UserIdentity user={user} />
                     <button
                         type="button"

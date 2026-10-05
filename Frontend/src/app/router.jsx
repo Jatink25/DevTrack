@@ -15,6 +15,7 @@ import ProjectActivityPage from '../pages/ProjectActivityPage.jsx'
 import ProjectSettingsPage from '../pages/ProjectSettingsPage.jsx'
 import MyIssuesPage from '../pages/MyIssuesPage.jsx'
 import NotFoundPage from '../pages/NotFoundPage.jsx'
+import AppLayout from '../components/layout/AppLayout.jsx'
 
 const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/dashboard" replace /> },
@@ -32,15 +33,20 @@ const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
-      { path: '/dashboard', element: <DashboardPage /> },
-      { path: '/my-issues', element: <MyIssuesPage /> },
-      { path: '/projects', element: <ProjectsPage /> },
-      { path: '/projects/:projectId', element: <ProjectOverviewPage /> },
-      { path: '/projects/:projectId/issues', element: <ProjectIssuesPage /> },
-      { path: '/projects/:projectId/issues/:issueId', element: <IssueDetailsPage /> },
-      { path: '/projects/:projectId/members', element: <ProjectMembersPage /> },
-      { path: '/projects/:projectId/activity', element: <ProjectActivityPage /> },
-      { path: '/projects/:projectId/settings', element: <ProjectSettingsPage /> },
+      {
+        element: <AppLayout />,
+        children: [
+          { path: '/dashboard', element: <DashboardPage /> },
+          { path: '/my-issues', element: <MyIssuesPage /> },
+          { path: '/projects', element: <ProjectsPage /> },
+          { path: '/projects/:projectId', element: <ProjectOverviewPage /> },
+          { path: '/projects/:projectId/issues', element: <ProjectIssuesPage /> },
+          { path: '/projects/:projectId/issues/:issueId', element: <IssueDetailsPage /> },
+          { path: '/projects/:projectId/members', element: <ProjectMembersPage /> },
+          { path: '/projects/:projectId/activity', element: <ProjectActivityPage /> },
+          { path: '/projects/:projectId/settings', element: <ProjectSettingsPage /> },
+        ],
+      },
     ],
   },
 

@@ -52,7 +52,7 @@ export default function CreateProjectModal({ onClose, onCreated }) {
                 aria-label="Close create project dialog"
                 disabled={submitting}
                 onClick={onClose}
-                className="absolute inset-0 cursor-default bg-gray-950/40"
+                className="absolute inset-0 cursor-pointer bg-gray-950/40 disabled:cursor-not-allowed"
             />
             <section
                 role="dialog"
@@ -77,7 +77,7 @@ export default function CreateProjectModal({ onClose, onCreated }) {
                         aria-label="Close dialog"
                         disabled={submitting}
                         onClick={onClose}
-                        className="rounded-md px-2 py-1 text-xl leading-none text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50"
+                        className="cursor-pointer rounded-md px-2 py-1 text-xl leading-none text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         ×
                     </button>
@@ -137,14 +137,14 @@ export default function CreateProjectModal({ onClose, onCreated }) {
                             type="button"
                             disabled={submitting}
                             onClick={onClose}
-                            className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
+                            className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="cursor-pointer rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             {submitting ? "Creating..." : "Create project"}
                         </button>

@@ -80,7 +80,7 @@ function QuickActions({ projectId }) {
                     <Link
                         key={label}
                         to={to}
-                        className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                        className="cursor-pointer rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                     >
                         {label}
                     </Link>
@@ -133,7 +133,7 @@ export default function ProjectOverviewPage() {
         <main className="space-y-6">
             <Link
                 to="/projects"
-                className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-gray-900"
+                className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-gray-900"
             >
                 <span aria-hidden="true">←</span>
                 All projects
@@ -161,7 +161,7 @@ export default function ProjectOverviewPage() {
                     </div>
                     <Link
                         to={`/projects/${encodeURIComponent(projectId)}/issues`}
-                        className="inline-flex shrink-0 items-center justify-center rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700"
+                        className="inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700"
                     >
                         View issues
                     </Link>

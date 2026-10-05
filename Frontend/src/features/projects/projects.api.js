@@ -20,3 +20,12 @@ export const getProjectById = async (projectId, { signal } = {}) => {
     );
     return res.data.data;
 };
+
+// GET /projects/:projectId/members -> ApiResponse { data: project members }
+export const getProjectMembers = async (projectId, { signal } = {}) => {
+    const res = await api.get(
+        `/projects/${encodeURIComponent(projectId)}/members`,
+        { signal }
+    );
+    return res.data.data;
+};

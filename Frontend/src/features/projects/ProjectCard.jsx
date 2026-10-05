@@ -35,7 +35,7 @@ export default function ProjectCard({ project }) {
                 </p>
                 <Link
                     to={`/projects/${encodeURIComponent(project._id)}`}
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-50"
+                    className="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-50"
                 >
                     Open project
                 </Link>

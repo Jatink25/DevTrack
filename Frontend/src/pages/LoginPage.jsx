@@ -83,14 +83,14 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-gray-900 text-white rounded py-2 text-sm disabled:opacity-60"
+          className="w-full cursor-pointer bg-gray-900 text-white rounded py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? 'Logging in...' : 'Log in'}
         </button>
 
         <p className="text-sm text-gray-600">
           No account yet?{' '}
-          <Link to="/register" className="text-gray-900 underline">
+          <Link to="/register" className="cursor-pointer text-gray-900 underline">
             Create one
           </Link>
         </p>

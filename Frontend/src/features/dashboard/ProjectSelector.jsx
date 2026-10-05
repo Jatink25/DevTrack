@@ -24,7 +24,7 @@ const ProjectSelector = ({ projects, selectedId, onSelect }) => {
                 id="dashboard-project"
                 value={selectedId ?? ""}
                 onChange={(e) => onSelect(e.target.value)}
-                className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+                className="cursor-pointer rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             >
                 {groups.map(({ status, projects: items }) => (
                     <optgroup key={status} label={status}>

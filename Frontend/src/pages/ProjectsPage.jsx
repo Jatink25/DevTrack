@@ -41,7 +41,7 @@ export default function ProjectsPage() {
       <button
         type="button"
         onClick={refetch}
-        className="mt-4 rounded-lg bg-red-700 px-4 py-2 font-medium text-white transition hover:bg-red-800"
+        className="mt-4 cursor-pointer rounded-lg bg-red-700 px-4 py-2 font-medium text-white transition hover:bg-red-800"
       >
         Try again
       </button>
@@ -55,7 +55,7 @@ export default function ProjectsPage() {
       <button
         type="button"
         onClick={() => setIsCreateOpen(true)}
-        className="mt-6 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700"
+        className="mt-6 cursor-pointer rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700"
       >
         Create Project
       </button>
@@ -83,7 +83,7 @@ export default function ProjectsPage() {
         <button
           type="button"
           onClick={() => setIsCreateOpen(true)}
-          className="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700"
+          className="inline-flex cursor-pointer items-center justify-center rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700"
         >
           Create Project
         </button>

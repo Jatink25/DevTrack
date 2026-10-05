@@ -27,7 +27,7 @@ const DashboardPage = () => {
                 </p>
                 <Link
                     to="/projects"
-                    className="mt-2 inline-block text-sm text-blue-600 hover:underline"
+                    className="mt-2 inline-block cursor-pointer text-sm text-blue-600 hover:underline"
                 >
                     Go to Projects
                 </Link>

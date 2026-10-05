@@ -23,7 +23,7 @@ export default function ProjectSectionNav({ projectId }) {
                         to={`${basePath}${suffix}`}
                         end={suffix === ""}
                         className={({ isActive }) =>
-                            `border-b-2 px-4 py-3 text-sm font-medium transition ${
+                            `cursor-pointer border-b-2 px-4 py-3 text-sm font-medium transition ${
                                 isActive
                                     ? "border-blue-600 text-blue-700"
                                     : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-800"

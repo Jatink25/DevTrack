@@ -48,3 +48,20 @@ export const createProjectIssue = async (projectId, issue, files = []) => {
     );
     return res.data.data;
 };
+
+// PATCH /projects/:projectId/issues/:issueId -> ApiResponse { data: Issue }
+export const updateProjectIssue = async (projectId, issueId, issue) => {
+    const res = await api.patch(
+        `/projects/${encodeURIComponent(projectId)}/issues/${encodeURIComponent(issueId)}`,
+        issue
+    );
+    return res.data.data;
+};
+
+// DELETE /projects/:projectId/issues/:issueId -> ApiResponse { data: {} }
+export const deleteProjectIssue = async (projectId, issueId) => {
+    const res = await api.delete(
+        `/projects/${encodeURIComponent(projectId)}/issues/${encodeURIComponent(issueId)}`
+    );
+    return res.data.data;
+};

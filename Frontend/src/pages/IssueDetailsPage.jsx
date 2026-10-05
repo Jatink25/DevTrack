@@ -1,5 +1,10 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useAuth } from "../features/auth/AuthContext.jsx";
 import { useProjectIssue } from "../features/issues/useProjectIssue.js";
+import { deleteProjectIssue } from "../features/issues/issues.api.js";
+import EditIssueModal from "../features/issues/EditIssueModal.jsx";
+import { useProjectMembers } from "../features/projects/useProjectMembers.js";
 import { useProject } from "../features/projects/useProject.js";
 import ProjectSectionNav from "../features/projects/ProjectSectionNav.jsx";
 import { getErrorMessage } from "../lib/getErrorMessage.js";
@@ -45,6 +50,12 @@ function getPersonLabel(person) {
 
 function isMongoId(value) {
     return /^[a-f\d]{24}$/i.test(value || "");
+}
+
+function getId(value) {
+    if (!value) return null;
+    if (typeof value === "object") return value._id?.toString?.() ?? null;
+    return value.toString();
 }
 
 function IssueDetailsSkeleton() {
@@ -110,7 +121,13 @@ function IssuePerson({ label, person }) {
 
 export default function IssueDetailsPage() {
     const { projectId, issueId } = useParams();
+    const navigate = useNavigate();
+    const { user } = useAuth();
     const hasValidIds = isMongoId(projectId) && isMongoId(issueId);
+    const [isEditOpen, setIsEditOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [actionError, setActionError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
     const {
         issue,
         loading,
@@ -121,6 +138,10 @@ export default function IssueDetailsPage() {
         hasValidIds ? issueId : null
     );
     const { project } = useProject(hasValidIds ? projectId : null);
+    const {
+        members,
+        error: membersError,
+    } = useProjectMembers(hasValidIds ? projectId : null);
 
     if (!hasValidIds) {
         return (
@@ -187,6 +208,55 @@ export default function IssueDetailsPage() {
     const dueDate = formatDate(issue.dueDate);
     const createdDate = formatDate(issue.createdAt);
     const attachments = Array.isArray(issue.attachments) ? issue.attachments : [];
+    const currentUserId = getId(user?._id);
+    const projectOwnerId = getId(project?.owner);
+    const issueCreatorId = getId(issue.createdBy);
+    const isProjectOwner = Boolean(
+        currentUserId && projectOwnerId && currentUserId === projectOwnerId
+    );
+    const canEdit = Boolean(
+        isProjectOwner ||
+            members?.some(
+                (member) =>
+                    getId(member.user) === currentUserId &&
+                    member.role === "Collaborator"
+            )
+    );
+    const canDelete = Boolean(
+        isProjectOwner ||
+            (currentUserId && issueCreatorId && currentUserId === issueCreatorId)
+    );
+
+    const handleUpdated = () => {
+        setIsEditOpen(false);
+        setActionError("");
+        setSuccessMessage("Issue updated successfully.");
+        refetch();
+    };
+
+    const handleDelete = async () => {
+        if (isDeleting) return;
+        if (!window.confirm("Delete this issue? This action cannot be undone.")) {
+            return;
+        }
+
+        setIsDeleting(true);
+        setActionError("");
+        setSuccessMessage("");
+        try {
+            await deleteProjectIssue(projectId, issueId);
+            navigate(issuesPath);
+        } catch (requestError) {
+            setActionError(
+                getErrorMessage(requestError, {
+                    401: "Your session has expired. Please sign in again.",
+                    403: "You don't have permission to delete this issue.",
+                    404: "This issue or project could not be found.",
+                })
+            );
+            setIsDeleting(false);
+        }
+    };
 
     return (
         <main className="space-y-6">
@@ -218,7 +288,30 @@ export default function IssueDetailsPage() {
                             {issue.title}
                         </h1>
                     </div>
-                    <div className="flex shrink-0 flex-wrap gap-2">
+                    <div className="flex shrink-0 flex-wrap items-center gap-2">
+                        {canEdit && (
+                            <button
+                                type="button"
+                                disabled={isDeleting}
+                                onClick={() => {
+                                    setActionError("");
+                                    setIsEditOpen(true);
+                                }}
+                                className="cursor-pointer rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                Edit
+                            </button>
+                        )}
+                        {canDelete && (
+                            <button
+                                type="button"
+                                disabled={isDeleting}
+                                onClick={handleDelete}
+                                className="cursor-pointer rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                {isDeleting ? "Deleting..." : "Delete"}
+                            </button>
+                        )}
                         <span
                             className={`rounded-full px-3 py-1.5 text-sm font-medium ${
                                 STATUS_STYLES[issue.status] ||
@@ -237,6 +330,35 @@ export default function IssueDetailsPage() {
                         </span>
                     </div>
                 </header>
+
+                {(actionError || successMessage || (canEdit && membersError)) && (
+                    <div className="space-y-2 border-b border-gray-100 py-4">
+                        {actionError && (
+                            <p
+                                role="alert"
+                                className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
+                            >
+                                {actionError}
+                            </p>
+                        )}
+                        {successMessage && (
+                            <p
+                                role="status"
+                                className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
+                            >
+                                {successMessage}
+                            </p>
+                        )}
+                        {canEdit && membersError && (
+                            <p
+                                role="alert"
+                                className="text-sm text-amber-800"
+                            >
+                                Project members could not be loaded. Assignee choices may be incomplete.
+                            </p>
+                        )}
+                    </div>
+                )}
 
                 <section className="py-6" aria-labelledby="issue-description-heading">
                     <h2
@@ -316,6 +438,17 @@ export default function IssueDetailsPage() {
                 issueId={issueId}
                 projectOwner={project?.owner}
             />
+
+            {isEditOpen && (
+                <EditIssueModal
+                    projectId={projectId}
+                    issue={issue}
+                    project={project}
+                    members={members}
+                    onClose={() => setIsEditOpen(false)}
+                    onUpdated={handleUpdated}
+                />
+            )}
         </main>
     );
 }

@@ -42,7 +42,7 @@ export default function LoginPage() {
         <h1 className="text-xl font-semibold text-gray-900">Log in to DevTrack</h1>
 
         {location.state?.registered && (
-          <p className="text-sm text-green-700">Account created. Log in to continue.</p>
+          <p role="status" className="text-sm text-green-700">Account created. Log in to continue.</p>
         )}
         {error && (
           <p role="alert" className="text-sm text-red-600">
@@ -51,7 +51,7 @@ export default function LoginPage() {
         )}
 
         <div>
-          <label htmlFor="email" className="block text-sm text-gray-700 mb-1">
+          <label htmlFor="email"           className="mb-1 block text-sm font-medium text-gray-700">
             Email
           </label>
           <input
@@ -61,12 +61,12 @@ export default function LoginPage() {
             required
             value={form.email}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm text-gray-700 mb-1">
+          <label htmlFor="password"           className="mb-1 block text-sm font-medium text-gray-700">
             Password
           </label>
           <input
@@ -76,14 +76,14 @@ export default function LoginPage() {
             required
             value={form.password}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full cursor-pointer bg-gray-900 text-white rounded py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full cursor-pointer rounded-lg bg-gray-900 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? 'Logging in...' : 'Log in'}
         </button>

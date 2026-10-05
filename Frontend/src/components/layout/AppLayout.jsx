@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthContext.jsx";
+import { readStoredProjectId } from "../../features/dashboard/useSelectedProject.js";
 
 const NAV_ITEMS = [
     { label: "Dashboard", to: "/dashboard", end: true },
     { label: "Projects", to: "/projects" },
+    { label: "Settings", to: "/projects" },
 ];
 
 function UserIdentity({ user, compact = false }) {
@@ -30,26 +32,29 @@ function UserIdentity({ user, compact = false }) {
     );
 }
 
-function NavigationLinks({ onNavigate }) {
+function NavigationLinks({ onNavigate, settingsPath }) {
     return (
         <nav aria-label="Main navigation" className="space-y-1">
-            {NAV_ITEMS.map(({ label, to, end }) => (
-                <NavLink
-                    key={to}
-                    to={to}
-                    end={end}
-                    onClick={onNavigate}
-                    className={({ isActive }) =>
-                    `flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                            isActive
-                                ? "bg-blue-50 text-blue-800"
-                                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                        }`
-                    }
-                >
-                    {label}
-                </NavLink>
-            ))}
+            {NAV_ITEMS.map(({ label, to, end }) => {
+                const target = label === "Settings" ? settingsPath : to;
+                return (
+                    <NavLink
+                        key={label}
+                        to={target}
+                        end={end}
+                        onClick={onNavigate}
+                        className={({ isActive }) =>
+                            `flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                                isActive
+                                    ? "bg-blue-50 text-blue-800"
+                                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                            }`
+                        }
+                    >
+                        {label}
+                    </NavLink>
+                );
+            })}
         </nav>
     );
 }
@@ -57,7 +62,13 @@ function NavigationLinks({ onNavigate }) {
 export default function AppLayout() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const routeProjectId = location.pathname.match(/^\/projects\/([^/]+)/)?.[1];
+    const selectedProjectId = routeProjectId || readStoredProjectId();
+    const settingsPath = selectedProjectId
+        ? `/projects/${encodeURIComponent(selectedProjectId)}/settings`
+        : "/projects";
 
     const handleLogout = () => {
         logout();
@@ -81,7 +92,7 @@ export default function AppLayout() {
                     <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
                         Workspace
                     </p>
-                    <NavigationLinks />
+                    <NavigationLinks settingsPath={settingsPath} />
                 </div>
 
                 <div className="space-y-4 border-t border-gray-100 p-4">
@@ -132,6 +143,7 @@ export default function AppLayout() {
                         >
                             <NavigationLinks
                                 onNavigate={() => setMobileMenuOpen(false)}
+                                settingsPath={settingsPath}
                             />
                             <button
                                 type="button"

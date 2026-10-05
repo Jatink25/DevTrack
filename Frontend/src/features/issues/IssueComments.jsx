@@ -102,6 +102,10 @@ export default function IssueComments({
     };
 
     const handleDelete = async (commentId) => {
+        if (!window.confirm("Delete this comment? This action cannot be undone.")) {
+            return;
+        }
+
         setDeletingId(commentId);
         setDeleteError("");
         try {

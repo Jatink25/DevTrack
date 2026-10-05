@@ -4,7 +4,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 const STORAGE_KEY = "devtrack:lastProjectId";
 
 // Only a project id is stored here, never anything auth-related.
-const readStoredId = () => {
+export const readStoredProjectId = () => {
     try {
         return localStorage.getItem(STORAGE_KEY);
     } catch {
@@ -40,7 +40,7 @@ export const useSelectedProject = (projects, loading) => {
 
         if (urlId && exists(urlId)) return urlId;
 
-        const storedId = readStoredId();
+        const storedId = readStoredProjectId();
         if (storedId && exists(storedId)) return storedId;
 
         const firstActive = projects.find((project) => project.status === "Active");

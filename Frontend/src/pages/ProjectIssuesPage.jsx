@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import DashboardError from "../features/dashboard/DashboardError.jsx";
 import ProjectSectionNav from "../features/projects/ProjectSectionNav.jsx";
@@ -61,9 +61,22 @@ export default function ProjectIssuesPage() {
         setFilters((current) => ({ ...current, [key]: value, page: 1 }));
     };
 
+    useEffect(() => {
+        const timeoutId = window.setTimeout(() => {
+            const search = searchInput.trim();
+            setFilters((current) =>
+                current.search === search
+                    ? current
+                    : { ...current, search, page: 1 }
+            );
+        }, 250);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [searchInput]);
+
     const handleSearchChange = (value) => {
         setSearchInput(value);
-        updateFilter("search", value.trim());
+        setNewlyCreatedIssue(null);
     };
 
     const issues = data?.issues ?? [];

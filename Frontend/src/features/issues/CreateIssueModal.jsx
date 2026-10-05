@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { useProjectMembers } from "../projects/useProjectMembers.js";
 import { getErrorMessage } from "../../lib/getErrorMessage.js";
@@ -28,6 +28,7 @@ export default function CreateIssueModal({
     const [priority, setPriority] = useState("Medium");
     const [dueDate, setDueDate] = useState("");
     const [files, setFiles] = useState([]);
+    const attachmentInputRef = useRef(null);
     const [error, setError] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
@@ -110,6 +111,17 @@ export default function CreateIssueModal({
                 })
             );
             setSubmitting(false);
+        }
+    };
+
+    const handleRemoveFile = (fileIndex) => {
+        const remainingFiles = files.filter((_, index) => index !== fileIndex);
+        setFiles(remainingFiles);
+
+        if (attachmentInputRef.current) {
+            const fileList = new DataTransfer();
+            remainingFiles.forEach((file) => fileList.items.add(file));
+            attachmentInputRef.current.files = fileList.files;
         }
     };
 
@@ -312,6 +324,7 @@ export default function CreateIssueModal({
                             Attachments
                         </label>
                         <input
+                            ref={attachmentInputRef}
                             id="issue-attachments"
                             name="attachment"
                             type="file"
@@ -327,9 +340,30 @@ export default function CreateIssueModal({
                             configure file type or size restrictions.
                         </p>
                         {files.length > 0 && (
-                            <p className="mt-1 text-xs text-gray-600">
-                                {files.length} file{files.length === 1 ? "" : "s"} selected
-                            </p>
+                            <ul
+                                aria-label="Selected attachments"
+                                className="mt-2 space-y-2"
+                            >
+                                {files.map((file, index) => (
+                                    <li
+                                        key={`${file.name}-${file.lastModified}-${index}`}
+                                        className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 px-3 py-2"
+                                    >
+                                        <span className="min-w-0 break-all text-sm text-gray-700">
+                                            {file.name}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            disabled={submitting}
+                                            onClick={() => handleRemoveFile(index)}
+                                            aria-label={`Remove ${file.name}`}
+                                            className="shrink-0 cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                                        >
+                                            Remove
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
                         )}
                     </div>
 

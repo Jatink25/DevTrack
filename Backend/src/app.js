@@ -7,6 +7,7 @@ import issueRoute from "./routes/issue.route.js";
 import commentRoute from "./routes/comment.route.js";
 import dashboardRoute from "./routes/dashboard.route.js";
 import activityRoute from "./routes/activity.route.js";
+import userRoute from "./routes/user.route.js";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use(cookieParser());
 
 //route
 app.use("/api/v1/auth",authRouter)
+app.use("/api/v1/users", userRoute)
 app.use("/api/v1/projects",projectRoute)
 app.use("/api/v1/projects/:projectId",issueRoute)
 

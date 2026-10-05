@@ -5,38 +5,35 @@ import { isCanceled } from "../../lib/errorKind.js";
 // Loads dashboard stats for one project. Refetches when projectId changes;
 // an in-flight request for the previous project is aborted.
 export const useProjectStats = (projectId) => {
-    const [stats, setStats] = useState(null);
-    const [loading, setLoading] = useState(Boolean(projectId));
-    const [error, setError] = useState(null);
+    const [result, setResult] = useState(null);
     const [reloadKey, setReloadKey] = useState(0);
+    const requestKey = JSON.stringify([projectId, reloadKey]);
 
     useEffect(() => {
-        if (!projectId) {
-            setStats(null);
-            setError(null);
-            setLoading(false);
-            return;
-        }
+        if (!projectId) return undefined;
 
         const controller = new AbortController();
 
-        setStats(null);
-        setError(null);
-        setLoading(true);
-
         getProjectStats(projectId, { signal: controller.signal })
-            .then((data) => setStats(data))
+            .then((stats) =>
+                setResult({ requestKey, stats, error: null })
+            )
             .catch((err) => {
-                if (!isCanceled(err)) setError(err);
-            })
-            .finally(() => {
-                if (!controller.signal.aborted) setLoading(false);
+                if (!isCanceled(err)) {
+                    setResult({ requestKey, stats: null, error: err });
+                }
             });
 
         return () => controller.abort();
-    }, [projectId, reloadKey]);
+    }, [projectId, reloadKey, requestKey]);
 
     const refetch = useCallback(() => setReloadKey((key) => key + 1), []);
+    const isCurrentResult = result?.requestKey === requestKey;
 
-    return { stats, loading, error, refetch };
+    return {
+        stats: isCurrentResult ? result.stats : null,
+        loading: Boolean(projectId && !isCurrentResult),
+        error: isCurrentResult ? result.error : null,
+        refetch,
+    };
 };

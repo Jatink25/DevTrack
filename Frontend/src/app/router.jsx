@@ -13,7 +13,6 @@ import IssueDetailsPage from '../pages/IssueDetailsPage.jsx'
 import ProjectMembersPage from '../pages/ProjectMembersPage.jsx'
 import ProjectActivityPage from '../pages/ProjectActivityPage.jsx'
 import ProjectSettingsPage from '../pages/ProjectSettingsPage.jsx'
-import MyIssuesPage from '../pages/MyIssuesPage.jsx'
 import NotFoundPage from '../pages/NotFoundPage.jsx'
 import AppLayout from '../components/layout/AppLayout.jsx'
 
@@ -37,7 +36,6 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { path: '/dashboard', element: <DashboardPage /> },
-          { path: '/my-issues', element: <MyIssuesPage /> },
           { path: '/projects', element: <ProjectsPage /> },
           { path: '/projects/:projectId', element: <ProjectOverviewPage /> },
           { path: '/projects/:projectId/issues', element: <ProjectIssuesPage /> },

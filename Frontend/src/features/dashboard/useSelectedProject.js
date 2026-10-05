@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 const STORAGE_KEY = "devtrack:lastProjectId";
 
@@ -27,8 +27,9 @@ const writeStoredId = (id) => {
 // -> first project of any status. The resolved id is written back to the URL
 // so the URL is always the source of truth.
 export const useSelectedProject = (projects, loading) => {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [usedFallback, setUsedFallback] = useState(false);
+    const [searchParams] = useSearchParams();
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const urlId = searchParams.get("project");
 
@@ -48,28 +49,48 @@ export const useSelectedProject = (projects, loading) => {
 
     // Keep the URL in sync with the resolved selection (replace, not push, so
     // the back button isn't polluted). If the URL had an id that isn't in the
-    // list, remember that so the page can show a short notice.
+    // list, that condition is reflected in `usedFallback` below.
     useEffect(() => {
         if (!selectedId || urlId === selectedId) return;
 
-        if (urlId) setUsedFallback(true);
-        setSearchParams({ project: selectedId }, { replace: true });
-    }, [selectedId, urlId, setSearchParams]);
+        navigate(
+            {
+                pathname: location.pathname,
+                search: `?project=${encodeURIComponent(selectedId)}`,
+            },
+            {
+                replace: true,
+                state: {
+                    ...location.state,
+                    usedFallback:
+                        Boolean(urlId) || Boolean(location.state?.usedFallback),
+                },
+            }
+        );
+    }, [selectedId, urlId, navigate, location.pathname, location.state]);
 
     // Called by the selector: explicit user choice, remembered for next time.
     const selectProject = useCallback(
         (id) => {
-            setUsedFallback(false);
             writeStoredId(id);
-            setSearchParams({ project: id });
+            navigate(
+                {
+                    pathname: location.pathname,
+                    search: `?project=${encodeURIComponent(id)}`,
+                },
+                {
+                    state: { ...location.state, usedFallback: false },
+                }
+            );
         },
-        [setSearchParams]
+        [navigate, location.pathname, location.state]
     );
 
     const selectedProject = useMemo(
         () => projects.find((project) => project._id === selectedId) ?? null,
         [projects, selectedId]
     );
+    const usedFallback = Boolean(location.state?.usedFallback);
 
     return { selectedId, selectedProject, selectProject, usedFallback };
 };

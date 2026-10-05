@@ -5,7 +5,6 @@ import { useAuth } from "../../features/auth/AuthContext.jsx";
 const NAV_ITEMS = [
     { label: "Dashboard", to: "/dashboard", end: true },
     { label: "Projects", to: "/projects" },
-    { label: "My Issues", to: "/my-issues", end: true },
 ];
 
 function UserIdentity({ user, compact = false }) {

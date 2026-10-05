@@ -5,30 +5,41 @@ import { isCanceled } from "../../lib/errorKind.js";
 
 // Loads the current user's projects (owned + member), sorted for display.
 export const useProjects = () => {
-    const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [result, setResult] = useState(null);
     const [reloadKey, setReloadKey] = useState(0);
+    const requestKey = JSON.stringify([reloadKey]);
 
     useEffect(() => {
         const controller = new AbortController();
 
-        setLoading(true);
-        setError(null);
-
         getProjects({ signal: controller.signal })
-            .then((data) => setProjects(sortProjects(data)))
+            .then((data) =>
+                setResult({
+                    requestKey,
+                    projects: sortProjects(data),
+                    error: null,
+                })
+            )
             .catch((err) => {
-                if (!isCanceled(err)) setError(err);
-            })
-            .finally(() => {
-                if (!controller.signal.aborted) setLoading(false);
+                if (!isCanceled(err)) {
+                    setResult({
+                        requestKey,
+                        projects: null,
+                        error: err,
+                    });
+                }
             });
 
         return () => controller.abort();
-    }, [reloadKey]);
+    }, [reloadKey, requestKey]);
 
     const refetch = useCallback(() => setReloadKey((key) => key + 1), []);
+    const isCurrentResult = result?.requestKey === requestKey;
 
-    return { projects, loading, error, refetch };
+    return {
+        projects: isCurrentResult ? result.projects : [],
+        loading: !isCurrentResult,
+        error: isCurrentResult ? result.error : null,
+        refetch,
+    };
 };

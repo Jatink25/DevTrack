@@ -2,6 +2,12 @@
 
 DevTrack is a project and issue tracking application for organizing team work, tracking progress, and keeping project discussions and updates in one place.
 
+## Live Demo
+
+https://devtrack-ap.netlify.app
+
+Note: DevTrack uses secure HttpOnly cookies for JWT authentication. The current frontend and backend are deployed on different domains, so some browsers may block the authentication cookies as third-party cookies. If login succeeds but the user is redirected back to the login page or receives a 401 Unauthorized error, they should allow third-party cookies in their browser and log in again.
+
 ## Features
 
 - Project workspaces with owner, Collaborator, and Viewer roles

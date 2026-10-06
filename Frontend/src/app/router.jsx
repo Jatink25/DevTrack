@@ -13,6 +13,7 @@ import IssueDetailsPage from '../pages/IssueDetailsPage.jsx'
 import ProjectMembersPage from '../pages/ProjectMembersPage.jsx'
 import ProjectActivityPage from '../pages/ProjectActivityPage.jsx'
 import ProjectSettingsPage from '../pages/ProjectSettingsPage.jsx'
+import SettingsPage from '../pages/SettingsPage.jsx'
 import NotFoundPage from '../pages/NotFoundPage.jsx'
 import AppLayout from '../components/layout/AppLayout.jsx'
 
@@ -43,6 +44,7 @@ const router = createBrowserRouter([
           { path: '/projects/:projectId/members', element: <ProjectMembersPage /> },
           { path: '/projects/:projectId/activity', element: <ProjectActivityPage /> },
           { path: '/projects/:projectId/settings', element: <ProjectSettingsPage /> },
+          { path: '/settings', element: <SettingsPage /> },
         ],
       },
     ],

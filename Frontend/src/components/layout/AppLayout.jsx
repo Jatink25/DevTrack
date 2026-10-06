@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthContext.jsx";
-import { readStoredProjectId } from "../../features/dashboard/useSelectedProject.js";
 import { useTheme } from "../../features/theme/useTheme.js";
 
 const NAV_ITEMS = [
     { label: "Dashboard", to: "/dashboard", end: true },
     { label: "Projects", to: "/projects" },
-    { label: "Settings", to: "/projects" },
+    { label: "Settings", to: "/settings" },
 ];
 
 function UserIdentity({ user, compact = false }) {
@@ -84,14 +83,13 @@ function ThemeToggle() {
 
 export default function AppLayout() {
     const { user, logout } = useAuth();
-    const navigate = useNavigate();
     const location = useLocation();
+    const navigate = useNavigate();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const routeProjectId = location.pathname.match(/^\/projects\/([^/]+)/)?.[1];
-    const selectedProjectId = routeProjectId || readStoredProjectId();
-    const settingsPath = selectedProjectId
-        ? `/projects/${encodeURIComponent(selectedProjectId)}/settings`
-        : "/projects";
+    const settingsPath = routeProjectId
+        ? `/projects/${encodeURIComponent(routeProjectId)}/settings`
+        : "/settings";
 
     const handleLogout = () => {
         logout();

@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/api/*"
+  to = "https://devtrack-0opa.onrender.com/api/:splat"
+  status = 200
+  force = true
